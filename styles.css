@@ -1,289 +1,332 @@
-/* ===== Original Theme: Lavender + Deep Purple ===== */
 :root{
-  --lavender: #E6E6FA;
-  --purple: #4B0082;
-  --purple-2: #6A20B6;
-  --text: #222;
-  --muted: #4b4b4b;
-  --card: #ffffff;
-  --border: #cfcfe6;
+  --bg1: #0b1020;
+  --bg2: #3b1b7a;
+  --bg3: #1aa7a1;
+  --text: #1f2330;
+  --muted: rgba(31,35,48,.75);
 
-  --danger: #8B0000;
-  --rose: #FFF0F3;     /* light overdue background */
-  --shadow: 0 6px 18px rgba(0,0,0,.10);
+  --card-bg: rgba(255,255,255,.58);
+  --card-border: rgba(255,255,255,.35);
+  --shadow: 0 18px 50px rgba(0,0,0,.18);
+
+  --accent: #4B0082; /* your deep purple heading color */
 }
 
 *{ box-sizing: border-box; }
-
+html,body{ height:100%; }
 body{
   margin:0;
-  font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
-  background: var(--lavender);
+  font-family: system-ui, -apple-system, Segoe UI, Roboto, Ubuntu, Cantarell, "Helvetica Neue", Arial, "Noto Sans", "Liberation Sans", sans-serif;
   color: var(--text);
+  background:
+    radial-gradient(1200px 800px at 15% 10%, rgba(26,167,161,.55), transparent 60%),
+    radial-gradient(900px 700px at 85% 20%, rgba(75,0,130,.55), transparent 55%),
+    radial-gradient(900px 900px at 60% 90%, rgba(255,255,255,.08), transparent 60%),
+    linear-gradient(135deg, var(--bg1), var(--bg2));
+  background-attachment: fixed;
 }
 
-.wrap{
-  max-width: 1100px;
-  margin: 0 auto;
-  padding: 18px;
-}
+.wrap{ max-width: 1100px; margin: 0 auto; padding: 18px; }
 
 .site-header{
-  background: rgba(255,255,255,.55);
-  border-bottom: 2px solid var(--purple);
+  padding: 26px 0 10px;
 }
-
-h1{
+.site-header h1{
   margin:0 0 6px;
-  color: var(--purple);
+  color: var(--accent);
   letter-spacing: .2px;
 }
-
 .sub{ margin:0; color: var(--muted); }
 
 .grid{
   display:grid;
-  grid-template-columns: 1fr 1.25fr;
-  gap: 16px;
+  grid-template-columns: 1fr 1.35fr;
+  gap: 18px;
+  align-items: start;
+}
+@media (max-width: 980px){
+  .grid{ grid-template-columns: 1fr; }
+}
+
+.skip-link{
+  position:absolute;
+  left:-9999px;
+  top:auto;
+  width:1px;
+  height:1px;
+  overflow:hidden;
+}
+.skip-link:focus{
+  left: 18px;
+  top: 12px;
+  width:auto;
+  height:auto;
+  padding:10px 12px;
+  border-radius: 12px;
+  background: rgba(255,255,255,.85);
+  outline: 2px solid rgba(0,0,0,.2);
+  z-index: 50;
 }
 
 .card{
-  background: var(--card);
-  border: 1px solid var(--border);
-  border-radius: 16px;
+  background: var(--card-bg);
+  border: 1px solid var(--card-border);
   box-shadow: var(--shadow);
-  padding: 16px;
+  border-radius: 18px;
+  padding: 18px;
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
 }
 
-h2{
-  margin: 0 0 12px;
-  color: var(--purple);
-}
+h2{ margin: 0 0 10px; color: var(--accent); }
+h3{ margin: 14px 0 10px; color: var(--accent); }
 
-h3{
-  margin: 14px 0 8px;
-  color: var(--purple);
-  border-bottom: 2px solid var(--purple);
-  padding-bottom: 6px;
-}
+.form .help{ margin: 0 0 12px; color: var(--muted); }
+.req{ color: #b00020; font-weight: 700; }
 
-.req{ color: var(--purple-2); font-weight: 800; }
-
-.help{
-  margin: 0 0 10px;
-  color: var(--muted);
-}
-
-label{
-  display:block;
-  font-weight: 650;
-  color: var(--text);
-  margin: 10px 0 0;
-}
-
-input, select, button{
-  width: 100%;
+label{ display:block; margin: 12px 0 6px; font-weight: 650; }
+input[type="text"], input[type="date"], select{
+  width:100%;
   padding: 10px 12px;
-  margin-top: 6px;
-  border-radius: 10px;
-  border: 1px solid #bdbde3;
-  background: #fff;
-  color: var(--text);
-  outline: none;
+  border-radius: 12px;
+  border: 1px solid rgba(0,0,0,.15);
+  background: rgba(255,255,255,.75);
 }
-
-/* A11Y: keep focus visible + strong */
-input:focus, select:focus{
-  border-color: var(--purple);
-  box-shadow: 0 0 0 3px rgba(75,0,130,.12);
-}
-
 .row{
   display:grid;
   grid-template-columns: 1fr 1fr;
-  gap: 10px;
-  margin-top: 10px;
+  gap: 12px;
 }
-
+@media (max-width: 520px){
+  .row{ grid-template-columns: 1fr; }
+}
 .inline{
   display:flex;
   align-items:center;
   gap: 10px;
   margin-top: 12px;
 }
-.inline input{
-  width: auto;
-  margin: 0;
-}
 
 .actions{
   display:flex;
   gap: 10px;
-  margin-top: 12px;
-}
-.actions button{ flex: 1; cursor: pointer; }
-
-button.primary, button[type="submit"]{
-  background: var(--purple);
-  border: 1px solid var(--purple);
-  color: #fff;
-  font-weight: 900;
+  flex-wrap: wrap;
+  margin-top: 14px;
 }
 
+button{
+  border: 0;
+  padding: 10px 14px;
+  border-radius: 12px;
+  background: var(--accent);
+  color: white;
+  font-weight: 650;
+  cursor:pointer;
+}
 button.secondary{
-  background: transparent;
-  border: 2px solid var(--purple);
-  color: var(--purple);
-  font-weight: 900;
+  background: rgba(255,255,255,.75);
+  color: var(--accent);
+  border: 1px solid rgba(75,0,130,.35);
 }
-
 button.danger{
-  background: transparent;
-  border: 2px solid var(--danger);
-  color: var(--danger);
-  font-weight: 900;
+  background: rgba(176,0,32,.90);
+}
+button:focus{
+  outline: 3px solid rgba(26,167,161,.35);
+  outline-offset: 2px;
 }
 
-button:hover{ opacity: .92; }
+.msg{ margin: 12px 0 0; color: var(--muted); min-height: 1.2em; }
 
-.msg{
-  min-height: 18px;
-  margin: 10px 0 0;
-  color: var(--purple);
-  font-weight: 800;
+.dash-top{
+  display:flex;
+  justify-content: space-between;
+  align-items:center;
+  gap: 12px;
 }
+.legend{ margin: 0 0 10px; color: var(--muted); }
 
-.legend{
-  margin: 0 0 10px;
-  color: var(--muted);
-}
-
-/* ===== Task Lists ===== */
-.list{
-  list-style:none;
-  padding:0;
-  margin:0 0 6px;
-  display:grid;
-  gap: 10px;
-}
-
+.list{ list-style: none; padding: 0; margin: 0 0 8px; }
 .task{
-  background: #fff;
-  border: 1px solid var(--border);
-  border-left: 6px solid var(--purple);
-  border-radius: 14px;
-  padding: 12px;
+  background: rgba(255,255,255,.70);
+  border: 1px solid rgba(0,0,0,.10);
+  border-radius: 16px;
+  padding: 14px;
+  margin: 10px 0;
 }
-
+.task:focus{
+  outline: 3px solid rgba(26,167,161,.35);
+  outline-offset: 2px;
+}
 .task.overdue{
-  background: var(--rose);
-  border-left: 6px solid var(--danger);
+  border-color: rgba(176,0,32,.55);
 }
 
 .taskTop{
   display:flex;
   justify-content: space-between;
-  gap: 10px;
+  gap: 12px;
   align-items: baseline;
 }
-
-.taskTitle{
-  font-weight: 900;
-  color: var(--text);
-}
-
-.meta{
-  color: var(--muted);
-  font-size: 0.95rem;
-}
+.taskTitle{ font-weight: 800; }
+.meta{ color: var(--muted); }
 
 .badges{
   display:flex;
   flex-wrap: wrap;
   gap: 8px;
-  margin-top: 8px;
+  margin: 10px 0;
 }
-
 .badge{
+  display:inline-flex;
+  align-items:center;
+  gap: 6px;
+  padding: 6px 10px;
   border-radius: 999px;
-  padding: 4px 10px;
-  font-size: 12px;
-  border: 1px solid var(--purple);
-  color: var(--purple);
-  background: rgba(75,0,130,.06);
-  font-weight: 900;
+  border: 1px solid rgba(0,0,0,.12);
+  background: rgba(255,255,255,.65);
+  font-size: .88rem;
+  font-weight: 650;
 }
 
-.badge.high{
-  background: var(--purple);
-  color:#fff;
-  border-color: var(--purple);
-}
-.badge.medium{
-  background: #D8BFD8;
-  color: var(--purple);
-  border-color: #C7A9C7;
-}
-.badge.low{
-  background: #EEE6FF;
-  color: var(--purple);
-  border-color: #D7CBFF;
-}
+/* Priority styling */
+.badge.low{ border-color: rgba(0,0,0,.10); }
+.badge.medium{ border-color: rgba(75,0,130,.25); }
+.badge.high{ border-color: rgba(176,0,32,.35); }
 
-/* A11Y: overdue badge (non-color-only indicator) */
+/* Deadline label colors (requested) */
+
+
+/* Non-color-only overdue badge stays visible */
 .badge.overdueBadge{
-  border-color: var(--danger);
-  color: var(--danger);
-  background: rgba(139,0,0,.06);
+  background: rgba(176, 0, 32, .12);
+  border-color: rgba(176, 0, 32, .45);
 }
 
 .taskActions{
   display:flex;
   gap: 10px;
-  margin-top: 10px;
+  flex-wrap: wrap;
 }
-.taskActions button{
-  width: auto;
-  padding: 8px 12px;
-  flex: 0 0 auto;
-}
-
-.dash-top{
-  display:flex;
-  align-items:center;
-  justify-content: space-between;
-  gap: 10px;
-  margin-bottom: 4px;
-}
-
-.foot{ padding-top: 0; }
+.foot{ padding: 18px; }
 .muted{ color: var(--muted); }
 
-/* ===== A11Y: Skip link + strong keyboard focus ===== */
-.skip-link{
-  position: absolute;
-  left: -999px;
-  top: 10px;
-  background: #fff;
-  color: var(--purple);
-  border: 2px solid var(--purple);
-  padding: 10px 12px;
-  border-radius: 12px;
-  font-weight: 900;
-  z-index: 9999;
-}
-.skip-link:focus{
-  left: 12px;
+/* Deadline label indicators (Option A) */
+
+
+
+
+
+/* =====================
+   SaaS Polish Pack (Glass Upgrade)
+   ===================== */
+
+body{
+  font-family: system-ui, -apple-system, "Segoe UI", Roboto, Ubuntu, Cantarell, "Noto Sans", "Liberation Sans", Arial, sans-serif;
+  font-size: 16px;
+  line-height: 1.55;
+  font-weight: 450;
+  color: rgba(17, 24, 39, .92);
 }
 
-/* Strong visible focus for keyboard users */
-:focus-visible{
-  outline: 3px solid var(--purple);
-  outline-offset: 3px;
+.site-header h1{
+  font-weight: 850;
+  letter-spacing: 0.2px;
+  color: rgba(46, 16, 102, .95);
+  text-shadow: 0 1px 0 rgba(255,255,255,.25);
 }
 
-/* Responsive */
-@media (max-width: 900px){
-  .grid{ grid-template-columns: 1fr; }
+.sub{
+  color: rgba(17, 24, 39, .65);
 }
 
+.card{
+  background: rgba(255,255,255,.70);
+  border: 1px solid rgba(255,255,255,.45);
+  box-shadow: 0 18px 55px rgba(0,0,0,.18);
+  backdrop-filter: blur(18px);
+  -webkit-backdrop-filter: blur(18px);
+  border-radius: 20px;
+}
+
+h2, h3{
+  font-weight: 800;
+  letter-spacing: .1px;
+  color: rgba(46, 16, 102, .95);
+}
+
+input[type="text"], input[type="date"], select{
+  background: rgba(255,255,255,.82);
+  border: 1px solid rgba(17,24,39,.14);
+  border-radius: 14px;
+  padding: 11px 12px;
+  box-shadow: 0 1px 0 rgba(255,255,255,.45) inset;
+}
+
+input[type="text"]:focus, input[type="date"]:focus, select:focus{
+  outline: 3px solid rgba(79, 70, 229, .25);
+  outline-offset: 2px;
+  border-color: rgba(79, 70, 229, .35);
+}
+
+button{
+  border-radius: 14px;
+  padding: 10px 14px;
+  font-weight: 750;
+  box-shadow: 0 10px 25px rgba(0,0,0,.12);
+}
+
+button:hover{
+  transform: translateY(-1px);
+}
+
+button:active{
+  transform: translateY(0px);
+}
+
+button.secondary{
+  background: rgba(255,255,255,.78);
+  color: rgba(46, 16, 102, .95);
+  border: 1px solid rgba(46,16,102,.22);
+  box-shadow: 0 10px 22px rgba(0,0,0,.08);
+}
+
+button.danger{
+  background: rgba(176,0,32,.92);
+  box-shadow: 0 10px 22px rgba(176,0,32,.16);
+}
+
+.task{
+  background: rgba(255,255,255,.78);
+  border: 1px solid rgba(17,24,39,.10);
+  border-radius: 18px;
+  box-shadow: 0 10px 26px rgba(0,0,0,.10);
+}
+
+.meta{
+  color: rgba(17,24,39,.62);
+}
+
+.badge{
+  background: rgba(255,255,255,.75);
+  border: 1px solid rgba(17,24,39,.12);
+  font-weight: 750;
+}
+
+
+/* Deadline Indicators (Green Safe / Yellow Warning / Red Overdue) */
+
+.badge.deadline.safe{
+  background: rgba(16, 185, 129, .18);
+  border-color: rgba(16, 185, 129, .55);
+}
+
+.badge.deadline.warning{
+  background: rgba(245, 158, 11, .22);
+  border-color: rgba(245, 158, 11, .65);
+}
+
+.badge.deadline.overdue{
+  background: rgba(225, 29, 72, .18);
+  border-color: rgba(225, 29, 72, .65);
+}

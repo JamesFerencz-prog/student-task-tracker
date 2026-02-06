@@ -6,6 +6,7 @@
  * - Makes each task card focusable (tabIndex=0) with aria-label
  * - Adds keyboard shortcut: Enter on focused card toggles completion
  * - Adds non-color "Overdue" badge when overdue
+ * - Adds deadline countdown labels (safe/soon/overdue) with day counts
  *
  * Core features kept:
  * - Add Assignment button works (reset + focus + scroll)
@@ -102,6 +103,9 @@ function init() {
       focusTaskCard(newId);
     }
   });
+
+  // Auto-update deadline labels as time passes
+  startAutoUpdateClock();
 }
 
 /* ===================== A11Y: ANNOUNCE ===================== */
@@ -216,6 +220,60 @@ function resetForm(clearMsg) {
   if (clearMsg) els.formMsg.textContent = "";
 }
 
+
+/* ===================== DEADLINE LABELS ===================== */
+/**
+ * Returns a user-friendly label + urgency class based on due date.
+ * - safe (>=4 days) => green
+ * - soon (<=3 days, incl. today/tomorrow) => yellow
+ * - overdue => red
+ */
+function getDeadlineInfo(task) {
+  if (task.completed) {
+    return { text: "Completed", cls: "done" };
+  }
+
+  const due = parseYmd(task.dueDate);
+  if (!due) return { text: "Due date invalid", cls: "safe" };
+
+  const today = startOfToday();
+  const dueStart = startOfDay(due);
+
+  const delta = diffDays(today, dueStart); // negative => overdue
+
+  if (delta < 0) {
+    const daysLate = Math.abs(delta);
+    const dayWord = daysLate === 1 ? "day" : "days";
+    return { text: `Overdue by ${daysLate} ${dayWord}`, cls: "overdue" };
+  }
+
+  if (delta === 0) {
+    return { text: "Due today", cls: "warning" };
+  }
+
+  if (delta === 1) {
+    return { text: "Due tomorrow", cls: "warning" };
+  }
+
+  if (delta <= 3) {
+    const dayWord = delta === 1 ? "day" : "days";
+    return { text: `Due in ${delta} ${dayWord}`, cls: "warning" };
+  }
+
+  // 4+ days = safe (green)
+  const dayWord = delta === 1 ? "day" : "days";
+  return { text: `Due in ${delta} ${dayWord}`, cls: "safe" };
+}
+
+
+
+/** Re-render periodically so labels update as time passes (e.g., after midnight). */
+function startAutoUpdateClock() {
+  setInterval(() => {
+    render();
+  }, 60 * 1000);
+}
+
 /* ===================== CATEGORIZATION ===================== */
 function getCategory(task) {
   if (task.completed) return "completed";
@@ -317,11 +375,13 @@ function renderBucket(listEl, bucket, isOverdueBucket) {
 
     const dueLabel = formatDue(t.dueDate);
 
-    // Non-color-only overdue indicator
+    // Deadline label + non-color-only overdue indicator
+    const deadline = getDeadlineInfo(t);
+
+    // Non-color-only overdue indicator (text remains even if colors are not perceived)
     const overdueBadge = (status === "overdue")
       ? `<span class="badge overdueBadge">Overdue</span>`
       : "";
-
     li.innerHTML = `
       <div class="taskTop">
         <div class="taskTitle">${escapeHtml(t.title)}</div>
@@ -329,6 +389,7 @@ function renderBucket(listEl, bucket, isOverdueBucket) {
       </div>
 
       <div class="badges">
+        <span class="badge deadline ${deadline.cls}">${escapeHtml(deadline.text)}</span>
         ${overdueBadge}
         <span class="badge ${t.priority}">Priority: ${capitalize(t.priority)}</span>
         <span class="badge">Status: ${capitalize(status)}</span>
@@ -374,9 +435,10 @@ function renderBucket(listEl, bucket, isOverdueBucket) {
 function buildAriaLabel(t) {
   const status = getCategory(t);
   const due = formatDue(t.dueDate).replace("Due: ", "Due ");
+  const deadline = getDeadlineInfo(t).text;
   const priority = `Priority ${t.priority}`;
   const completion = t.completed ? "Completed" : "Not completed";
-  return `${t.title}. ${due}. ${priority}. Status ${status}. ${completion}.`;
+  return `${t.title}. ${deadline}. ${due}. ${priority}. Status ${status}. ${completion}.`;
 }
 
 function focusTaskCard(id) {
