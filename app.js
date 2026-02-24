@@ -40,6 +40,8 @@ const els = {
 };
 
 let tasks = loadTasks();
+// Metrics: ensure old tasks have safe fields
+for (const t of tasks) normalizeTaskMetrics(t);
 
 init();
 render();
@@ -134,28 +136,226 @@ function saveTasks() {
   localStorage.setItem(STORAGE_KEY, JSON.stringify(tasks));
 }
 
+/* ===================== METRICS: TIME-ON-TASK (BACKEND LOGIC) ===================== */
+/**
+ * Backend "status" model for time-on-task:
+ * - Active: task.completed === false
+ * - Completed: task.completed === true
+ *
+ * Stored fields (epoch ms for timezone consistency):
+ * - activatedAt: when the *current* active work session started (null when completed)
+ * - completedAt: when the task was most recently completed (null when active)
+ * - timeSpentMs: accumulated time spent across one or more active sessions
+ */
+
+const STATUS_ACTIVE = "active";
+const STATUS_COMPLETED = "completed";
+
+function getTaskStatus(task) {
+  return task && task.completed ? STATUS_COMPLETED : STATUS_ACTIVE;
+}
+
+function normalizeTaskMetrics(task) {
+  // Safe defaults for older tasks / missing fields
+  if (!task || typeof task !== "object") return;
+
+  if (typeof task.timeSpentMs !== "number" || !Number.isFinite(task.timeSpentMs)) {
+    task.timeSpentMs = 0;
+  }
+
+  if (!("activatedAt" in task)) task.activatedAt = null;
+  if (!("completedAt" in task)) task.completedAt = null;
+
+  // If a task is active and has no activatedAt, initialize it so timing can work
+  if (getTaskStatus(task) === STATUS_ACTIVE && (task.activatedAt === null || !Number.isFinite(task.activatedAt))) {
+    task.activatedAt = Date.now();
+  }
+
+  // If a task is completed, ensure activatedAt is cleared
+  if (getTaskStatus(task) === STATUS_COMPLETED) {
+    task.activatedAt = null;
+  }
+}
+
+function handleStatusChange(task, nextStatus) {
+  const now = Date.now();
+  const currentStatus = getTaskStatus(task);
+
+  if (nextStatus !== STATUS_ACTIVE && nextStatus !== STATUS_COMPLETED) {
+    // Invalid transition request: ignore safely
+    return { ok: false, reason: "invalid_next_status" };
+  }
+
+  // No-op transition
+  if (currentStatus === nextStatus) {
+    return { ok: true, noop: true };
+  }
+
+  // Ensure fields exist before any calculations
+  normalizeTaskMetrics(task);
+
+  if (nextStatus === STATUS_ACTIVE) {
+    // Reopened (Completed -> Active) OR forced Active
+    task.completed = false;
+    task.completedAt = null;
+    task.activatedAt = now; // start a new active session
+    return { ok: true, status: STATUS_ACTIVE };
+  }
+
+  // nextStatus === STATUS_COMPLETED
+  task.completed = true;
+
+  // Edge case: missing activatedAt (shouldn't happen after normalize, but safe anyway)
+  if (typeof task.activatedAt === "number" && Number.isFinite(task.activatedAt)) {
+    const delta = now - task.activatedAt;
+    if (delta > 0) task.timeSpentMs += delta;
+  }
+
+  task.completedAt = now;
+  task.activatedAt = null; // close the active session
+  return { ok: true, status: STATUS_COMPLETED };
+}
+
+/** Pure helper for unit tests / future UI consumption */
+function calcTimeSpentMs(task, atTimeMs = Date.now()) {
+  if (!task) return 0;
+  const base = typeof task.timeSpentMs === "number" ? task.timeSpentMs : 0;
+  const active = (getTaskStatus(task) === STATUS_ACTIVE && typeof task.activatedAt === "number")
+    ? Math.max(0, atTimeMs - task.activatedAt)
+    : 0;
+  return base + active;
+}
+
+/* ===================== UNIT TESTS (NO FRAMEWORK NEEDED) ===================== */
+/**
+ * Runs in the browser console:
+ *   TaskTrackerTests.run()
+ * Optional: override time with TaskTrackerTests.run({ now: () => <ms> })
+ */
+const TaskTrackerTests = {
+  run(opts = {}) {
+    const nowFn = typeof opts.now === "function" ? opts.now : (() => Date.now());
+
+    function assert(name, condition) {
+      if (!condition) throw new Error("FAIL: " + name);
+      return "PASS: " + name;
+    }
+
+    const results = [];
+
+    // Test 1: Standard flow (Active -> Completed)
+    (() => {
+      const t = { id: "t1", completed: false, timeSpentMs: 0, activatedAt: 1000, completedAt: null };
+      // Complete at 4000 => +3000ms
+      const oldNow = Date.now;
+      Date.now = () => 4000;
+      handleStatusChange(t, STATUS_COMPLETED);
+      Date.now = oldNow;
+
+      results.push(assert("Standard flow adds time", t.timeSpentMs === 3000));
+      results.push(assert("Standard flow sets completedAt", t.completedAt === 4000));
+      results.push(assert("Standard flow clears activatedAt", t.activatedAt === null));
+      results.push(assert("Standard flow marks completed", t.completed === true));
+    })();
+
+    // Test 2: Reopen scenario (Completed -> Active -> Completed accumulates)
+    (() => {
+      const t = { id: "t2", completed: true, timeSpentMs: 3000, activatedAt: null, completedAt: 4000 };
+
+      // Reopen at 5000
+      let oldNow = Date.now;
+      Date.now = () => 5000;
+      handleStatusChange(t, STATUS_ACTIVE);
+      Date.now = oldNow;
+
+      results.push(assert("Reopen sets active", t.completed === false));
+      results.push(assert("Reopen sets activatedAt", t.activatedAt === 5000));
+      results.push(assert("Reopen clears completedAt", t.completedAt === null));
+
+      // Complete again at 8000 => +3000ms => total 6000ms
+      oldNow = Date.now;
+      Date.now = () => 8000;
+      handleStatusChange(t, STATUS_COMPLETED);
+      Date.now = oldNow;
+
+      results.push(assert("Reopen accumulates time", t.timeSpentMs === 6000));
+      results.push(assert("Reopen sets completedAt again", t.completedAt === 8000));
+    })();
+
+    // Test 3: Invalid state transitions handled safely
+    (() => {
+      const t = { id: "t3", completed: false, timeSpentMs: 0, activatedAt: 1000, completedAt: null };
+      const res = handleStatusChange(t, "bogus");
+      results.push(assert("Invalid transition returns ok=false", res && res.ok === false));
+      // Ensure task not corrupted
+      results.push(assert("Invalid transition does not flip completion", t.completed === false));
+    })();
+
+    return results;
+  }
+};
+
+// Expose for console usage
+if (typeof window !== "undefined") {
+  window.TaskTrackerTests = TaskTrackerTests;
+}
+
 /* ===================== CRUD ===================== */
 function createTask(data) {
   const id = makeId();
-  tasks.push({
+  const now = Date.now();
+
+  const task = {
     id,
     title: data.title,
     dueDate: data.dueDate,
     priority: data.priority,
-    completed: data.completed,
-    createdAt: Date.now()
-  });
+    completed: !!data.completed,
+    createdAt: now,
+
+    // Metrics fields (epoch ms)
+    activatedAt: null,
+    completedAt: null,
+    timeSpentMs: 0
+  };
+
+  // Initial status handling
+  if (task.completed) {
+    // Created as completed: set completedAt, keep activatedAt null
+    task.completedAt = now;
+  } else {
+    task.activatedAt = now;
+  }
+
+  tasks.push(task);
   return id;
 }
+
 
 function updateTask(data) {
   const t = tasks.find(x => x.id === data.id);
   if (!t) return;
+
+  const prevStatus = getTaskStatus(t);
+
   t.title = data.title;
   t.dueDate = data.dueDate;
   t.priority = data.priority;
-  t.completed = data.completed;
+  t.completed = !!data.completed;
+
+  // Metrics: apply status transition rules
+  const nextStatus = getTaskStatus(t);
+  normalizeTaskMetrics(t);
+
+  if (prevStatus !== nextStatus) {
+    // Apply transition side-effects (timestamps + time calc)
+    handleStatusChange(t, nextStatus);
+  } else if (nextStatus === STATUS_ACTIVE && (t.activatedAt === null || !Number.isFinite(t.activatedAt))) {
+    // Edge: active task with missing activation timestamp
+    t.activatedAt = Date.now();
+  }
 }
+
 
 function deleteTask(id) {
   tasks = tasks.filter(t => t.id !== id);
@@ -167,12 +367,22 @@ function deleteTask(id) {
 function toggleComplete(id) {
   const t = tasks.find(x => x.id === id);
   if (!t) return;
-  t.completed = !t.completed;
+
+  const nextStatus = t.completed ? STATUS_ACTIVE : STATUS_COMPLETED;
+  const res = handleStatusChange(t, nextStatus);
+
   saveTasks();
   render();
-  announce(t.completed ? "Marked completed." : "Marked open.");
+
+  if (res && res.ok && !res.noop) {
+    announce(nextStatus === STATUS_COMPLETED ? "Marked completed." : "Marked open.");
+  } else {
+    announce("Status update ignored.");
+  }
+
   focusTaskCard(id);
 }
+
 
 function startEdit(id) {
   const t = tasks.find(x => x.id === id);
