@@ -1,3 +1,4 @@
+
 :root{
   --bg1: #0b1020;
   --bg2: #3b1b7a;
@@ -9,15 +10,18 @@
   --card-border: rgba(255,255,255,.35);
   --shadow: 0 18px 50px rgba(0,0,0,.18);
 
-  --accent: #4B0082; /* your deep purple heading color */
+  --accent: #4B0082;
 }
 
 *{ box-sizing: border-box; }
 html,body{ height:100%; }
 body{
   margin:0;
-  font-family: system-ui, -apple-system, Segoe UI, Roboto, Ubuntu, Cantarell, "Helvetica Neue", Arial, "Noto Sans", "Liberation Sans", sans-serif;
-  color: var(--text);
+  font-family: system-ui, -apple-system, "Segoe UI", Roboto, Ubuntu, Cantarell, "Noto Sans", "Liberation Sans", Arial, sans-serif;
+  font-size: 16px;
+  line-height: 1.55;
+  font-weight: 450;
+  color: rgba(17, 24, 39, .92);
   background:
     radial-gradient(1200px 800px at 15% 10%, rgba(26,167,161,.55), transparent 60%),
     radial-gradient(900px 700px at 85% 20%, rgba(75,0,130,.55), transparent 55%),
@@ -32,14 +36,19 @@ body{
   padding: 26px 0 10px;
 }
 .site-header h1{
-  margin:0 0 6px;
-  color: var(--accent);
-  letter-spacing: .2px;
+  margin: 0 0 6px;
+  font-weight: 850;
+  letter-spacing: 0.2px;
+  color: rgba(46, 16, 102, .95);
+  text-shadow: 0 1px 0 rgba(255,255,255,.25);
 }
-.sub{ margin:0; color: var(--muted); }
+.sub{
+  margin: 0;
+  color: rgba(17, 24, 39, .65);
+}
 
 .grid{
-  display:grid;
+  display: grid;
   grid-template-columns: 1fr 1.35fr;
   gap: 18px;
   align-items: start;
@@ -49,19 +58,19 @@ body{
 }
 
 .skip-link{
-  position:absolute;
-  left:-9999px;
-  top:auto;
-  width:1px;
-  height:1px;
-  overflow:hidden;
+  position: absolute;
+  left: -9999px;
+  top: auto;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
 }
 .skip-link:focus{
   left: 18px;
   top: 12px;
-  width:auto;
-  height:auto;
-  padding:10px 12px;
+  width: auto;
+  height: auto;
+  padding: 10px 12px;
   border-radius: 12px;
   background: rgba(255,255,255,.85);
   outline: 2px solid rgba(0,0,0,.2);
@@ -69,31 +78,48 @@ body{
 }
 
 .card{
-  background: var(--card-bg);
-  border: 1px solid var(--card-border);
-  box-shadow: var(--shadow);
-  border-radius: 18px;
+  background: rgba(255,255,255,.70);
+  border: 1px solid rgba(255,255,255,.45);
+  box-shadow: 0 18px 55px rgba(0,0,0,.18);
+  border-radius: 20px;
   padding: 18px;
-  backdrop-filter: blur(14px);
-  -webkit-backdrop-filter: blur(14px);
+  backdrop-filter: blur(18px);
+  -webkit-backdrop-filter: blur(18px);
 }
 
-h2{ margin: 0 0 10px; color: var(--accent); }
-h3{ margin: 14px 0 10px; color: var(--accent); }
+h2{
+  margin: 0 0 10px;
+  font-weight: 800;
+  letter-spacing: .1px;
+  color: rgba(46, 16, 102, .95);
+}
+h3{
+  margin: 14px 0 10px;
+  font-weight: 800;
+  letter-spacing: .1px;
+  color: rgba(46, 16, 102, .95);
+}
 
 .form .help{ margin: 0 0 12px; color: var(--muted); }
 .req{ color: #b00020; font-weight: 700; }
 
-label{ display:block; margin: 12px 0 6px; font-weight: 650; }
+label{ display: block; margin: 12px 0 6px; font-weight: 650; }
 input[type="text"], input[type="date"], select{
-  width:100%;
-  padding: 10px 12px;
-  border-radius: 12px;
-  border: 1px solid rgba(0,0,0,.15);
-  background: rgba(255,255,255,.75);
+  width: 100%;
+  padding: 11px 12px;
+  border-radius: 14px;
+  border: 1px solid rgba(17,24,39,.14);
+  background: rgba(255,255,255,.82);
+  box-shadow: 0 1px 0 rgba(255,255,255,.45) inset;
 }
+input[type="text"]:focus, input[type="date"]:focus, select:focus{
+  outline: 3px solid rgba(79, 70, 229, .25);
+  outline-offset: 2px;
+  border-color: rgba(79, 70, 229, .35);
+}
+
 .row{
-  display:grid;
+  display: grid;
   grid-template-columns: 1fr 1fr;
   gap: 12px;
 }
@@ -101,14 +127,14 @@ input[type="text"], input[type="date"], select{
   .row{ grid-template-columns: 1fr; }
 }
 .inline{
-  display:flex;
-  align-items:center;
+  display: flex;
+  align-items: center;
   gap: 10px;
   margin-top: 12px;
 }
 
 .actions{
-  display:flex;
+  display: flex;
   gap: 10px;
   flex-wrap: wrap;
   margin-top: 14px;
@@ -117,19 +143,28 @@ input[type="text"], input[type="date"], select{
 button{
   border: 0;
   padding: 10px 14px;
-  border-radius: 12px;
+  border-radius: 14px;
   background: var(--accent);
   color: white;
-  font-weight: 650;
-  cursor:pointer;
+  font-weight: 750;
+  cursor: pointer;
+  box-shadow: 0 10px 25px rgba(0,0,0,.12);
+}
+button:hover{
+  transform: translateY(-1px);
+}
+button:active{
+  transform: translateY(0px);
 }
 button.secondary{
-  background: rgba(255,255,255,.75);
-  color: var(--accent);
-  border: 1px solid rgba(75,0,130,.35);
+  background: rgba(255,255,255,.78);
+  color: rgba(46, 16, 102, .95);
+  border: 1px solid rgba(46,16,102,.22);
+  box-shadow: 0 10px 22px rgba(0,0,0,.08);
 }
 button.danger{
-  background: rgba(176,0,32,.90);
+  background: rgba(176,0,32,.92);
+  box-shadow: 0 10px 22px rgba(176,0,32,.16);
 }
 button:focus{
   outline: 3px solid rgba(26,167,161,.35);
@@ -139,20 +174,21 @@ button:focus{
 .msg{ margin: 12px 0 0; color: var(--muted); min-height: 1.2em; }
 
 .dash-top{
-  display:flex;
+  display: flex;
   justify-content: space-between;
-  align-items:center;
+  align-items: center;
   gap: 12px;
 }
 .legend{ margin: 0 0 10px; color: var(--muted); }
 
 .list{ list-style: none; padding: 0; margin: 0 0 8px; }
 .task{
-  background: rgba(255,255,255,.70);
-  border: 1px solid rgba(0,0,0,.10);
-  border-radius: 16px;
+  background: rgba(255,255,255,.78);
+  border: 1px solid rgba(17,24,39,.10);
+  border-radius: 18px;
   padding: 14px;
   margin: 10px 0;
+  box-shadow: 0 10px 26px rgba(0,0,0,.10);
 }
 .task:focus{
   outline: 3px solid rgba(26,167,161,.35);
@@ -163,30 +199,30 @@ button:focus{
 }
 
 .taskTop{
-  display:flex;
+  display: flex;
   justify-content: space-between;
   gap: 12px;
   align-items: baseline;
 }
 .taskTitle{ font-weight: 800; }
-.meta{ color: var(--muted); }
+.meta{ color: rgba(17,24,39,.62); }
 
 .badges{
-  display:flex;
+  display: flex;
   flex-wrap: wrap;
   gap: 8px;
   margin: 10px 0;
 }
 .badge{
-  display:inline-flex;
-  align-items:center;
+  display: inline-flex;
+  align-items: center;
   gap: 6px;
   padding: 6px 10px;
   border-radius: 999px;
-  border: 1px solid rgba(0,0,0,.12);
-  background: rgba(255,255,255,.65);
+  border: 1px solid rgba(17,24,39,.12);
+  background: rgba(255,255,255,.75);
   font-size: .88rem;
-  font-weight: 650;
+  font-weight: 750;
 }
 
 /* Priority styling */
@@ -194,139 +230,49 @@ button:focus{
 .badge.medium{ border-color: rgba(75,0,130,.25); }
 .badge.high{ border-color: rgba(176,0,32,.35); }
 
-/* Deadline label colors (requested) */
+/* Deadline label colors */
+.badge.deadline.safe{
+  background: rgba(16, 185, 129, .18);
+  border-color: rgba(16, 185, 129, .55);
+}
+.badge.deadline.warning{
+  background: rgba(245, 158, 11, .22);
+  border-color: rgba(245, 158, 11, .65);
+}
+.badge.deadline.overdue{
+  background: rgba(225, 29, 72, .18);
+  border-color: rgba(225, 29, 72, .65);
+}
 
-
-/* Non-color-only overdue badge stays visible */
+/* Non-color-only overdue badge */
 .badge.overdueBadge{
   background: rgba(176, 0, 32, .12);
   border-color: rgba(176, 0, 32, .45);
 }
 
+/* Total Time badge */
+.badge.totalTime{
+  background: rgba(255, 255, 255, .75);
+  border-color: rgba(17, 24, 39, .18);
+}
+
+/* Active task: subtle teal to indicate live timer */
+.badge.totalTime.timeActive{
+  background: rgba(26, 167, 161, .15);
+  border-color: rgba(26, 167, 161, .55);
+}
+
+/* Completed task: neutral green */
+.badge.totalTime.timeDone{
+  background: rgba(16, 185, 129, .12);
+  border-color: rgba(16, 185, 129, .40);
+}
+
 .taskActions{
-  display:flex;
+  display: flex;
   gap: 10px;
   flex-wrap: wrap;
 }
 .foot{ padding: 18px; }
 .muted{ color: var(--muted); }
 
-/* Deadline label indicators (Option A) */
-
-
-
-
-
-/* =====================
-   SaaS Polish Pack (Glass Upgrade)
-   ===================== */
-
-body{
-  font-family: system-ui, -apple-system, "Segoe UI", Roboto, Ubuntu, Cantarell, "Noto Sans", "Liberation Sans", Arial, sans-serif;
-  font-size: 16px;
-  line-height: 1.55;
-  font-weight: 450;
-  color: rgba(17, 24, 39, .92);
-}
-
-.site-header h1{
-  font-weight: 850;
-  letter-spacing: 0.2px;
-  color: rgba(46, 16, 102, .95);
-  text-shadow: 0 1px 0 rgba(255,255,255,.25);
-}
-
-.sub{
-  color: rgba(17, 24, 39, .65);
-}
-
-.card{
-  background: rgba(255,255,255,.70);
-  border: 1px solid rgba(255,255,255,.45);
-  box-shadow: 0 18px 55px rgba(0,0,0,.18);
-  backdrop-filter: blur(18px);
-  -webkit-backdrop-filter: blur(18px);
-  border-radius: 20px;
-}
-
-h2, h3{
-  font-weight: 800;
-  letter-spacing: .1px;
-  color: rgba(46, 16, 102, .95);
-}
-
-input[type="text"], input[type="date"], select{
-  background: rgba(255,255,255,.82);
-  border: 1px solid rgba(17,24,39,.14);
-  border-radius: 14px;
-  padding: 11px 12px;
-  box-shadow: 0 1px 0 rgba(255,255,255,.45) inset;
-}
-
-input[type="text"]:focus, input[type="date"]:focus, select:focus{
-  outline: 3px solid rgba(79, 70, 229, .25);
-  outline-offset: 2px;
-  border-color: rgba(79, 70, 229, .35);
-}
-
-button{
-  border-radius: 14px;
-  padding: 10px 14px;
-  font-weight: 750;
-  box-shadow: 0 10px 25px rgba(0,0,0,.12);
-}
-
-button:hover{
-  transform: translateY(-1px);
-}
-
-button:active{
-  transform: translateY(0px);
-}
-
-button.secondary{
-  background: rgba(255,255,255,.78);
-  color: rgba(46, 16, 102, .95);
-  border: 1px solid rgba(46,16,102,.22);
-  box-shadow: 0 10px 22px rgba(0,0,0,.08);
-}
-
-button.danger{
-  background: rgba(176,0,32,.92);
-  box-shadow: 0 10px 22px rgba(176,0,32,.16);
-}
-
-.task{
-  background: rgba(255,255,255,.78);
-  border: 1px solid rgba(17,24,39,.10);
-  border-radius: 18px;
-  box-shadow: 0 10px 26px rgba(0,0,0,.10);
-}
-
-.meta{
-  color: rgba(17,24,39,.62);
-}
-
-.badge{
-  background: rgba(255,255,255,.75);
-  border: 1px solid rgba(17,24,39,.12);
-  font-weight: 750;
-}
-
-
-/* Deadline Indicators (Green Safe / Yellow Warning / Red Overdue) */
-
-.badge.deadline.safe{
-  background: rgba(16, 185, 129, .18);
-  border-color: rgba(16, 185, 129, .55);
-}
-
-.badge.deadline.warning{
-  background: rgba(245, 158, 11, .22);
-  border-color: rgba(245, 158, 11, .65);
-}
-
-.badge.deadline.overdue{
-  background: rgba(225, 29, 72, .18);
-  border-color: rgba(225, 29, 72, .65);
-}

@@ -1,122 +1,114 @@
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Student Task & Assignment Tracker (TEST - Modern Glass)</title>
-
-<link rel="stylesheet" href="styles.css" />
-
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Student Task &amp; Assignment Tracker</title>
+  <link rel="stylesheet" href="styles.css" />
 </head>
 <body>
 
-  <!-- A11Y: Skip link for keyboard users -->
-  <a class="skip-link" href="#mainContent">Skip to main content</a>
+  <a class="skip-link" href="#main">Skip to main content</a>
 
-  <header class="site-header" role="banner">
-    <div class="wrap">
-      <h1>Student Task & Assignment Tracker</h1>
+  <div class="wrap">
+
+    <!-- Site Header -->
+    <header class="site-header">
+      <h1>Student Task &amp; Assignment Tracker</h1>
       <p class="sub">Track assignments, due dates, priority, and completion status in one place.</p>
-      <p class="sub muted">TEST Theme: Modern Glass</p>
-    </div>
-  </header>
+    </header>
 
-  <main id="mainContent" class="wrap grid" role="main">
-    <!-- FORM -->
-    <section class="card" aria-labelledby="formTitle">
-      <h2 id="formTitle">Add Assignment</h2>
+    <main id="main">
+      <div class="grid">
 
-      <form id="taskForm" class="form" aria-describedby="formHelp formMsg">
-        <input type="hidden" id="taskId" />
+        <!-- Form Panel -->
+        <section class="card form" aria-labelledby="formTitle">
+          <h2 id="formTitle">Add Assignment</h2>
 
-        <p id="formHelp" class="help">
-          Fields marked with <span class="req">*</span> are required.
-        </p>
+          <form id="taskForm" novalidate>
+            <input type="hidden" id="taskId" />
 
-        <label for="title">
-          Title <span class="req">*</span>
-        </label>
-        <input
-          type="text"
-          id="title"
-          required
-          maxlength="80"
-          placeholder="e.g., IT-488 Unit 3 Subtask"
-          autocomplete="off"
-        />
+            <p class="help">Fields marked with <span class="req" aria-hidden="true">*</span><span class="sr-only">asterisk</span> are required.</p>
 
-        <div class="row">
-          <div>
-            <label for="dueDate">
-              Due Date <span class="req">*</span>
-            </label>
-            <input type="date" id="dueDate" required />
+            <label for="title">Title <span class="req" aria-hidden="true">*</span></label>
+            <input type="text" id="title" autocomplete="off" required />
+
+            <div class="row">
+              <div>
+                <label for="dueDate">Due Date <span class="req" aria-hidden="true">*</span></label>
+                <input type="date" id="dueDate" required />
+              </div>
+
+              <div>
+                <label for="priority">Priority</label>
+                <select id="priority">
+                  <option value="low">Low</option>
+                  <option value="medium" selected>Medium</option>
+                  <option value="high">High</option>
+                </select>
+              </div>
+            </div>
+
+            <div class="inline">
+              <input type="checkbox" id="completed" />
+              <label for="completed" style="margin:0;">Completed</label>
+            </div>
+
+            <div class="actions">
+              <button type="submit">Save Assignment</button>
+              <button type="button" class="secondary" id="cancelBtn" hidden>Cancel Edit</button>
+              <button type="button" class="danger" id="clearAllBtn">Clear All</button>
+            </div>
+
+            <!-- A11Y live region -->
+            <p class="msg" id="formMsg" aria-live="polite" aria-atomic="true"></p>
+
+          </form>
+        </section>
+
+        <!-- Dashboard Panel -->
+        <section class="card" aria-labelledby="dashHeading">
+          <div class="dash-top">
+            <h2 id="dashHeading">Dashboard</h2>
+            <button type="button" id="addAssignmentBtn">Add Assignment</button>
           </div>
 
-          <div>
-            <label for="priority">Priority</label>
-            <select id="priority">
-              <option value="low">Low</option>
-              <option value="medium" selected>Medium</option>
-              <option value="high">High</option>
-            </select>
+          <p class="legend">
+            Tasks are automatically categorized by due date + completion status and sorted by priority then due date.
+          </p>
+
+          <div role="region" aria-label="Task lists">
+
+            <h3>Overdue</h3>
+            <ul class="list" id="listOverdue" aria-label="Overdue tasks"></ul>
+
+            <h3>Due Today</h3>
+            <ul class="list" id="listToday" aria-label="Due today tasks"></ul>
+
+            <h3>Due Soon (Next 7 Days)</h3>
+            <ul class="list" id="listSoon" aria-label="Due soon tasks"></ul>
+
+            <h3>Upcoming</h3>
+            <ul class="list" id="listUpcoming" aria-label="Upcoming tasks"></ul>
+
+            <h3>Completed</h3>
+            <ul class="list" id="listCompleted" aria-label="Completed tasks"></ul>
+
           </div>
-        </div>
+        </section>
 
-        <label class="inline" for="completed">
-          <input type="checkbox" id="completed" />
-          Completed
-        </label>
+      </div><!-- /.grid -->
+    </main>
 
-        <div class="actions">
-          <button type="submit" id="saveBtn">Save Assignment</button>
-          <button type="button" id="cancelBtn" class="secondary" hidden>Cancel Edit</button>
-          <button type="button" id="clearAllBtn" class="danger">Clear All</button>
-        </div>
+    <footer class="foot">
+      <p class="muted">IT-488 demo build &mdash; Modern Glass theme</p>
+    </footer>
 
-        <!-- A11Y: Live region for screen reader announcements -->
-        <p id="formMsg" class="msg" aria-live="polite" role="status"></p>
-      </form>
-    </section>
+  </div><!-- /.wrap -->
 
-    <!-- DASHBOARD -->
-    <section class="card" aria-labelledby="dashTitle">
-      <div class="dash-top">
-        <h2 id="dashTitle">Dashboard</h2>
-        <button type="button" id="addAssignmentBtn" class="primary">
-          Add Assignment
-        </button>
-      </div>
+  <script src="app.js"></script>
 
-      <p class="legend">
-        Tasks are automatically categorized by due date + completion status and sorted by priority then due date.
-      </p>
-
-      <div class="categories" aria-label="Task categories">
-        <h3>Overdue</h3>
-        <ul id="listOverdue" class="list" aria-label="Overdue assignments"></ul>
-
-        <h3>Due Today</h3>
-        <ul id="listToday" class="list" aria-label="Assignments due today"></ul>
-
-        <h3>Due Soon (Next 7 Days)</h3>
-        <ul id="listSoon" class="list" aria-label="Assignments due soon"></ul>
-
-        <h3>Upcoming</h3>
-        <ul id="listUpcoming" class="list" aria-label="Upcoming assignments"></ul>
-
-        <h3>Completed</h3>
-        <ul id="listCompleted" class="list" aria-label="Completed assignments"></ul>
-      </div>
-    </section>
-  </main>
-
-  <footer class="wrap foot" role="contentinfo">
-    <span class="muted">IT-488 demo build (TEST theme: Modern Glass)</span>
-  </footer>
-
-  <!-- IMPORTANT: still uses your original JS -->
-  <script src="./app.js"></script>
 </body>
 </html>
 
